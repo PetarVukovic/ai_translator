@@ -1,0 +1,6 @@
+/__pycache__
+/env
+/token.json
+/secrets
+.env
+/app/srt_files.DS_Store
