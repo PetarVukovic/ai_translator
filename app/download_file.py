@@ -3,7 +3,7 @@ import os
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
-from app.get_creds import getCredentials
+from get_creds import getCredentials
 
 
 def download_file(real_file_id):
@@ -35,6 +35,7 @@ def download_file(real_file_id):
 
     return file.getvalue()
 
+
 def fetch_start_page_token():
     try:
         # create drive api client
@@ -49,6 +50,7 @@ def fetch_start_page_token():
         response = None
 
     return response.get("startPageToken")
+
 
 def fetch_changes(start_page_token):
     try:
