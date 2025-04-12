@@ -43,7 +43,7 @@ async def translate(chunkcs: str, language: str = "English") -> str:
 import os
 
 
-async def transalte_chuncks(srt_as_array: list[str]):
+async def transalte_chuncks(srt_as_array: list[str], filename: str):
     num_chunks = 10
     total = len(srt_as_array)
     step = max(1, total // num_chunks)
@@ -66,7 +66,9 @@ async def transalte_chuncks(srt_as_array: list[str]):
             )
 
             # 💾 Zapis na disk
-            file_path = os.path.join(output_dir, f"{lang.lower()}_translated.srt.txt")
+            file_path = os.path.join(
+                output_dir, f"{lang.lower()}_{filename}_translated.srt.txt"
+            )
             try:
                 with open(file_path, "w", encoding="utf-8") as f:
                     f.write(translated_srt_as_str)
@@ -78,6 +80,7 @@ async def transalte_chuncks(srt_as_array: list[str]):
             response = await client.post(
                 n8n_webhook_url,
                 json={
+                    "filename": filename,
                     "language": lang,
                     "translated_srt": translated_srt_as_str,
                 },
@@ -101,7 +104,7 @@ async def upload_srt(file: UploadFile = File(...)):
     log.info("Starting with uploaded srt file")
     srt_file = await file.read()
     srt_file_list = await srt_2_list(srt_file)
-    async for result in transalte_chuncks(srt_file_list):
+    async for result in transalte_chuncks(srt_file_list, file.filename):
         log.info(f"Sent translation for {result['lang']}, status: {result['status']}")
 
     return {"message": "Translation started and sending to n8n."}
